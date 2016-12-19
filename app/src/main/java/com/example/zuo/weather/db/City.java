@@ -4,7 +4,7 @@ import org.litepal.crud.DataSupport;
 
 /**
  * Created by zuo on 2016/12/19.
- * 省
+ * 市
  */
 
 public class City extends DataSupport {

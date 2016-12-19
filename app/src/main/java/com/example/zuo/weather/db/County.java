@@ -4,7 +4,7 @@ import org.litepal.crud.DataSupport;
 
 /**
  * Created by zuo on 2016/12/19.
- * 省
+ * 县
  */
 
 public class County extends DataSupport {

@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import com.example.zuo.weather.db.City;
 import com.example.zuo.weather.db.County;
 import com.example.zuo.weather.db.Province;
+import com.example.zuo.weather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -81,5 +83,22 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /**
+     * 将返回的Json数据解析成Weather实体类
+     */
+    public static Weather handleWeatherResponse(String reponse) {
+        if (!TextUtils.isEmpty(reponse)) {
+            try {
+                JSONObject jsonObject = new JSONObject(reponse);
+                JSONArray jsonArray = jsonObject.getJSONArray("HeWeather data service 3.0");
+                String weatherContent = jsonArray.getJSONObject(0).toString();
+                return new Gson().fromJson(weatherContent, Weather.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }

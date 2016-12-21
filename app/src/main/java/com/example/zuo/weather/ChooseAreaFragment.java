@@ -47,6 +47,7 @@ public class ChooseAreaFragment extends Fragment {
     /*
      省列表
      */
+
     private List<Province> provinceList;
     /*
     市列表

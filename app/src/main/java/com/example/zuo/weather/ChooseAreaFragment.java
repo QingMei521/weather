@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.example.zuo.weather.db.City;
 import com.example.zuo.weather.db.County;
 import com.example.zuo.weather.db.Province;
-import com.example.zuo.weather.gson.Utility;
+import com.example.zuo.weather.util.Utility;
 import com.example.zuo.weather.util.HttpUtil;
 
 import org.litepal.crud.DataSupport;
@@ -25,9 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -45,24 +42,24 @@ public class ChooseAreaFragment extends Fragment {
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
     /*
-     Ê¡ÁĞ±í
+     çœåˆ—è¡¨
      */
 
     private List<Province> provinceList;
     /*
-    ÊĞÁĞ±í
+    å¸‚åˆ—è¡¨
     */
     private List<City> cityList;
     /*
-    ÏØÁĞ±í
+    å¿åˆ—è¡¨
     */
     private List<County> countyList;
     /*
-    Ñ¡ÖĞµÄÊ¡·İ
+    é€‰ä¸­çš„çœä»½
      */
     private Province selectedProvince;
     /*
-    Ñ¡ÖĞµÄ³ÇÊĞ
+    é€‰ä¸­çš„åŸå¸‚
      */
     private City selectedCity;
 
@@ -71,7 +68,7 @@ public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
     /*
-    µ±Ç°Ñ¡ÖĞµÄ¼¶±ğ
+    å½“å‰é€‰ä¸­çš„çº§åˆ«
      */
     private int currentLevel;
     private ProgressDialog progressDialog;
@@ -140,9 +137,9 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryProvinces() {
 /**
- * ²éÑ¯È«¹úËùÓĞµÄÊ¡£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+ * æŸ¥è¯¢å…¨å›½æ‰€æœ‰çš„çœï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
  */
-        titleBarLable.setText("ÖĞ¹ú");
+        titleBarLable.setText("ä¸­å›½");
         titleBarLeft.setVisibility(View.GONE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
@@ -161,7 +158,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryCities() {
 /**
- * ²éÑ¯Ñ¡ÖĞÊ¡ÄÚËùÓĞµÄÊĞ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+ * æŸ¥è¯¢é€‰ä¸­çœå†…æ‰€æœ‰çš„å¸‚ï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
  */
         titleBarLable.setText(selectedProvince.getProvinceName());
         titleBarLeft.setVisibility(View.VISIBLE);
@@ -183,7 +180,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryCounties() {
         /**
-         * ²éÑ¯Ñ¡ÖĞÊĞÄÚËùÓĞµÄÏØ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
+         * æŸ¥è¯¢é€‰ä¸­å¸‚å†…æ‰€æœ‰çš„å¿ï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
          */
         titleBarLable.setText(selectedCity.getCityName());
         titleBarLeft.setVisibility(View.VISIBLE);
@@ -204,7 +201,7 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
-    //¸ù¾İ´«ÈëµÄµØÖ·ºÍÀàĞÍ´Ó·şÎñÆ÷ÉÏ²éÑ¯Ê¡ÊĞÏØµÄÊı¾İ
+    //æ ¹æ®ä¼ å…¥çš„åœ°å€å’Œç±»å‹ä»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢çœå¸‚å¿çš„æ•°æ®
     private void quaryFromSever(String address, String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -212,7 +209,7 @@ public class ChooseAreaFragment extends Fragment {
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(() -> {
                     closeProgressDialog();
-                    Toast.makeText(getContext(), "¼ÓÔØÊ§°Ü", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "åŠ è½½å¤±è´¥", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -243,18 +240,18 @@ public class ChooseAreaFragment extends Fragment {
         });
     }
 
-    //¹Ø±Õ½ø¶È¶Ô»°¿ò
+    //å…³é—­è¿›åº¦å¯¹è¯æ¡†
     private void closeProgressDialog() {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
 
-    //ÏÔÊ¾½ø¶È¶Ô»°¿ò
+    //æ˜¾ç¤ºè¿›åº¦å¯¹è¯æ¡†
     private void showProgressDialog() {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("ÕıÔÚ¼ÓÔØ...");
+            progressDialog.setMessage("æ­£åœ¨åŠ è½½...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();

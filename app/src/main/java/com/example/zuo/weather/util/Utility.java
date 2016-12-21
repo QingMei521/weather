@@ -1,4 +1,4 @@
-package com.example.zuo.weather.gson;
+package com.example.zuo.weather.util;
 
 import android.text.TextUtils;
 

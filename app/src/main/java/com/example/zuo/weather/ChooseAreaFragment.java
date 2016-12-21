@@ -22,6 +22,7 @@ import com.example.zuo.weather.util.HttpUtil;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,36 +37,31 @@ public class ChooseAreaFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    @BindView(R.id.title_bar_lable)
-    TextView titleBarLable;
-    @BindView(R.id.title_bar_left)
-    ImageView titleBarLeft;
-    @BindView(R.id.listview)
-    ListView listview;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ArrayAdapter<String> adapter;
-    private List<String> dataList;
+    private List<String> dataList = new ArrayList<>();
     /*
-     çœåˆ—è¡¨
+     Ê¡ÁĞ±í
      */
     private List<Province> provinceList;
     /*
-    å¸‚åˆ—è¡¨
+    ÊĞÁĞ±í
     */
     private List<City> cityList;
     /*
-    å¿åˆ—è¡¨
+    ÏØÁĞ±í
     */
     private List<County> countyList;
     /*
-    é€‰ä¸­çš„çœä»½
+    Ñ¡ÖĞµÄÊ¡·İ
      */
     private Province selectedProvince;
     /*
-    é€‰ä¸­çš„åŸå¸‚
+    Ñ¡ÖĞµÄ³ÇÊĞ
      */
     private City selectedCity;
 
@@ -74,10 +70,13 @@ public class ChooseAreaFragment extends Fragment {
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
     /*
-    å½“å‰é€‰ä¸­çš„çº§åˆ«
+    µ±Ç°Ñ¡ÖĞµÄ¼¶±ğ
      */
     private int currentLevel;
     private ProgressDialog progressDialog;
+    private ListView listview;
+    private TextView titleBarLable;
+    private ImageView titleBarLeft;
 
     public ChooseAreaFragment() {
         // Required empty public constructor
@@ -106,9 +105,20 @@ public class ChooseAreaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area, container, false);
-        ButterKnife.bind(this, view);
+        //ButterKnife.bind(this, view);
+        listview = (ListView) view.findViewById(R.id.listview);
+        titleBarLable = (TextView) view.findViewById(R.id.title_bar_lable);
+        titleBarLeft = (ImageView) view.findViewById(R.id.title_bar_left);
+
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, dataList);
         listview.setAdapter(adapter);
+        titleBarLeft.setOnClickListener(v -> {
+            if (currentLevel == LEVEL_COUNTY) {
+                queryCities();
+            } else if (currentLevel == LEVEL_CITY) {
+                queryProvinces();
+            }
+        });
         return view;
     }
 
@@ -127,20 +137,11 @@ public class ChooseAreaFragment extends Fragment {
         queryProvinces();
     }
 
-    @OnClick(R.id.title_bar_left)
-    public void onClick() {
-        if (currentLevel == LEVEL_COUNTY) {
-            queryCities();
-        } else if (currentLevel == LEVEL_CITY) {
-            queryProvinces();
-        }
-    }
-
     private void queryProvinces() {
 /**
- * æŸ¥è¯¢å…¨å›½æ‰€æœ‰çš„çœï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
+ * ²éÑ¯È«¹úËùÓĞµÄÊ¡£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
  */
-        titleBarLable.setText("ä¸­å›½");
+        titleBarLable.setText("ÖĞ¹ú");
         titleBarLeft.setVisibility(View.GONE);
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0) {
@@ -159,7 +160,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryCities() {
 /**
- * æŸ¥è¯¢é€‰ä¸­çœå†…æ‰€æœ‰çš„å¸‚ï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
+ * ²éÑ¯Ñ¡ÖĞÊ¡ÄÚËùÓĞµÄÊĞ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
  */
         titleBarLable.setText(selectedProvince.getProvinceName());
         titleBarLeft.setVisibility(View.VISIBLE);
@@ -181,7 +182,7 @@ public class ChooseAreaFragment extends Fragment {
 
     private void queryCounties() {
         /**
-         * æŸ¥è¯¢é€‰ä¸­å¸‚å†…æ‰€æœ‰çš„å¿ï¼Œä¼˜å…ˆä»æ•°æ®åº“æŸ¥è¯¢ï¼Œå¦‚æœæ²¡æœ‰æŸ¥åˆ°å†å»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢
+         * ²éÑ¯Ñ¡ÖĞÊĞÄÚËùÓĞµÄÏØ£¬ÓÅÏÈ´ÓÊı¾İ¿â²éÑ¯£¬Èç¹ûÃ»ÓĞ²éµ½ÔÙÈ¥·şÎñÆ÷ÉÏ²éÑ¯
          */
         titleBarLable.setText(selectedCity.getCityName());
         titleBarLeft.setVisibility(View.VISIBLE);
@@ -202,7 +203,7 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
-    //æ ¹æ®ä¼ å…¥çš„åœ°å€å’Œç±»å‹ä»æœåŠ¡å™¨ä¸ŠæŸ¥è¯¢çœå¸‚å¿çš„æ•°æ®
+    //¸ù¾İ´«ÈëµÄµØÖ·ºÍÀàĞÍ´Ó·şÎñÆ÷ÉÏ²éÑ¯Ê¡ÊĞÏØµÄÊı¾İ
     private void quaryFromSever(String address, String type) {
         showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
@@ -210,7 +211,7 @@ public class ChooseAreaFragment extends Fragment {
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(() -> {
                     closeProgressDialog();
-                    Toast.makeText(getContext(), "åŠ è½½å¤±è´¥", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "¼ÓÔØÊ§°Ü", Toast.LENGTH_SHORT).show();
                 });
             }
 
@@ -241,18 +242,18 @@ public class ChooseAreaFragment extends Fragment {
         });
     }
 
-    //å…³é—­è¿›åº¦å¯¹è¯æ¡†
+    //¹Ø±Õ½ø¶È¶Ô»°¿ò
     private void closeProgressDialog() {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
 
-    //æ˜¾ç¤ºè¿›åº¦å¯¹è¯æ¡†
+    //ÏÔÊ¾½ø¶È¶Ô»°¿ò
     private void showProgressDialog() {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("æ­£åœ¨åŠ è½½...");
+            progressDialog.setMessage("ÕıÔÚ¼ÓÔØ...");
             progressDialog.setCanceledOnTouchOutside(false);
         }
         progressDialog.show();
